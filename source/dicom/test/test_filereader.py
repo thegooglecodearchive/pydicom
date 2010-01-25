@@ -1,7 +1,7 @@
 # test_filereader.py
 """unittest tests for dicom.filereader module"""
 # Copyright (c) 2010 Darcy Mason
-# This file is part of pydicom, relased under an MIT license.
+# This file is part of pydicom, released under a modified MIT license.
 #    See the file license.txt included with this distribution, also
 #    available at http://pydicom.googlecode.com
 
@@ -95,6 +95,13 @@ class ReaderTests(unittest.TestCase):
         self.assertEqual(ct.Columns, 128, "Columns not 128")
         self.assertEqual(ct.BitsStored, 16, "Bits Stored not 16")
         self.assertEqual(len(ct.PixelData), 128*128*2, "Pixel data not expected length")
+        
+        # Also test private elements name can be resolved:
+        expected = "[Duration of X-ray on]"
+        got = ct[(0x0043,0x104e)].name
+        msg = "Mismatch in private tag name, expected '%s', got '%s'"
+        self.assertEqual(expected, got, msg % (expected, got))
+        
     def testMR(self):
         """Returns correct values for sample data elements in test MR file"""
         mr = read_file(mr_name)
@@ -165,6 +172,7 @@ class JPEGlosslessTests(unittest.TestCase):
         """JPEGlossless: Fails gracefully when uncompressed data is asked for..."""
         self.assertRaises(NotImplementedError, self.jpeg._getPixelArray)
 
+        # create an in-memory fragment
 class DeferredReadTests(unittest.TestCase):
     """Test that deferred data element reading (for large size)
     works as expected

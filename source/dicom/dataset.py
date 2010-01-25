@@ -13,7 +13,7 @@ Dataset(derived class of Python's dict class)
 """
 #
 # Copyright (c) 2008 Darcy Mason
-# This file is part of pydicom, relased under an MIT license.
+# This file is part of pydicom, released under a modified MIT license.
 #    See the file license.txt included with this distribution, also
 #    available at http://pydicom.googlecode.com
 #
@@ -24,7 +24,7 @@ import logging
 logger = logging.getLogger('pydicom')
 from dicom.datadict import DicomDictionary, dictionaryVR
 from dicom.datadict import TagForName, AllNamesForTag
-from dicom.tag import Tag
+from dicom.tag import Tag, BaseTag
 from dicom.dataelem import DataElement, DataElement_from_raw, RawDataElement
 from dicom.valuerep import is_stringlike
 from dicom.UID import NotCompressedPixelTransferSyntaxes
@@ -211,8 +211,16 @@ class Dataset(dict):
                 return getattr(self, key)
             except AttributeError:
                 return default
-        else: # is not a string, probably is a tag -> hand off to underlying dict
-            return dict.get(self, key, default)
+        else: 
+            # is not a string, try to make it into a tag and then hand it 
+            # off to the underlying dict            
+            if not isinstance(key, BaseTag):
+                try:
+                    key = Tag(key)
+                except:
+                    raise TypeError("Dataset.get key must be a string or tag")
+        return dict.get(self, key, default)
+    
     def __getattr__(self, name):
         """Intercept requests for unknown Dataset python-attribute names.
 
@@ -230,6 +238,7 @@ class Dataset(dict):
             raise AttributeError, "Dataset does not have attribute '%s'." % name
         else:  # do have that dicom data_element
             return self[tag].value
+    
     def __getitem__(self, key):
         """Operator for dataset[key] request."""
         tag = Tag(key)
@@ -257,6 +266,7 @@ class Dataset(dict):
             [(tag,data_element) for tag,data_element in self.items() if tag.group==group]
                       ))
         return ds
+    
     def has_key(self, key):
         """Extend dict.has_key() to handle *named tags*."""
         return self.__contains__(key)
@@ -264,6 +274,7 @@ class Dataset(dict):
     # isBigEndian property
     def _getBigEndian(self):
         return not self.isLittleEndian
+    
     def _setBigEndian(self, value):
         self.isLittleEndian = not value
     isBigEndian = property(_getBigEndian, _setBigEndian)
@@ -285,7 +296,6 @@ class Dataset(dict):
         taglist.sort()
         for tag in taglist:
             yield self[tag]
-
 
     def _PixelDataNumpy(self):
         """Return a NumPy array of the pixel data.
@@ -362,6 +372,7 @@ class Dataset(dict):
     #    See http://docs.python.org/library/stdtypes.html#string-formatting-operations
     default_element_format =  "%(tag)s %(name)-35.35s %(VR)s: %(repval)s"
     default_sequence_element_format = "%(tag)s %(name)-35.35s %(VR)s: %(repval)s"
+    
     def formatted_lines(self, element_format=default_element_format,
                         sequence_element_format=default_sequence_element_format,
                         indent_format=None):
