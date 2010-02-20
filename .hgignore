@@ -1,0 +1,24 @@
+# .hgignore file
+#
+syntax: glob
+ 
+# Backup files
+*~
+
+# Lock files used by the Emacs editor.
+.\#*
+
+# Temporary files used by the vim editor.
+.*.swp
+.*.orig
+
+# A hidden file created by the Mac OS X Finder.
+.DS_Store
+
+# python byte-code files
+*.pyc
+
+# Build/dist files
+source/dist/*
+source/build/*
+source/pydicom.egg-info/*
