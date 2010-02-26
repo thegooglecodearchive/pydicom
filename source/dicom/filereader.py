@@ -376,7 +376,8 @@ def read_partial(fileobj, stop_when=None, defer_size=None, force=False):
         A True value means read_data_element will raise StopIteration.
         if None, then the whole file is read.
     """
-    preamble = read_preamble(fileobj, force) # raises an exception if force=False
+    # Read preamble -- raise an exception if missing and force=False
+    preamble = read_preamble(fileobj, force) 
     file_meta_dataset = Dataset()
     # Assume a transfer syntax, correct it as necessary
     is_implicit_VR = True
@@ -501,53 +502,3 @@ def read_deferred_data_element(filename, timestamp, raw_data_elem):
 
     # Everything is ok, now this object should act like usual DataElement
     return data_elem
-
-if __name__ == "__main__":
-    def hex2str(hexstr):
-        """Return a bytestring rep of a string of hex rep of bytes separated by spaces"""
-        return "".join([chr(int(x,16)) for x in hexstr.split()])  # after python 2.3 can be a () generator rather than a list
-    
-    filename = "/Users/darcy/hg/pydicom/source/dicom/testfiles/rtss.dcm"
-    ds = read_file(filename)
-    from dicom.util.dump import PrettyPrint
-    # print ds.items()
-    PrettyPrint(ds)
-    # print ds
-    STOP
-    seq_str = (
-    " 06 30 10 00"   # Referenced Frame of Reference Sequence   1 item(s) ---- 
-    " ff ff ff ff"   #   undefined length
-        " fe ff 00 e0"   # Sequence Item 
-        " ff ff ff ff"  #   of undefined length 
-            " 20 00 52 00"    # (0020, 0052) Frame of Reference UID 
-            " 04 00 00 00"    # length 4
-            " 32 2e 31 36"    # 2.16  -- rest left out to simplify
-            " 06 30 12 00"    # RT Referenced Study Sequence  
-            " ff ff ff ff"      #   undefined length
-                " fe ff 00 e0"  # Sequence Item
-                " ff ff ff ff"  #   of undefined length
-                    " 08 00 50 11"  # (0008, 1150) Referenced SOP Class UID 
-                    " 04 00 00 00"  # length 4
-                    " 31 2e 32 2e"  # 1.2.          
-                    " 08 00 55 11"  # (0008, 1155) Referenced SOP Instance UID 
-                    " 04 00 00 00"  # length 4
-                    " 32 2e 31 36"  # 2.16
-                    " 06 30 14 00"  # (3006, 0014)  RT Referenced Series Sequence
-                    " ff ff ff ff"  # undefined length
-                        " fe ff 00 e0"  # Sequence Item
-                        " ff ff ff ff"  # undefined length
-                            " 20 00 0e 00"  # (0020, 000e) Series Instance UID  
-                            " 04 00 00 00"  # length 4
-                            " 32 2e 31 36"  # 2.16
-                        " fe ff 0d e0 00 00 00 00" # Item Delimiter Tag                     
-                    " fe ff dd e0 00 00 00 00" # Sequence Delimiter Tag
-                " fe ff 0d e0 00 00 00 00" # Item Delimiter Tag
-            " fe ff dd e0 00 00 00 00" # Sequence Delimiter Tag
-        " fe ff 0d e0 00 00 00 00" # Item Delimiter Tag
-    " fe ff dd e0 00 00 00 00"  # Sequence Delimiter Tag
-    )
-    infile = StringIO(hex2str(seq_str))
-    ds = read_file(infile)
-    from dicom.util import PrettyPrint
-    PrettyPrint(ds)
-    
