@@ -33,7 +33,10 @@ class RawReaderExplVRTests(unittest.TestCase):
         """Raw read: Explicit VR Little Endian short length....................."""
         # (0008,212a) IS 2-byte-length, value '1 '
         infile = BytesIO(hex2bytes("08 00 2a 21 49 53 02 00 31 20"))
-        expected = ((8, 0x212a), 'IS', 2, '1 ', 0x8, False, True)
+        # XXX Assumes that a RawDataElement doesn't convert the value based
+        # upon the VR value, thus it will remain a byte string since that is
+        # the input
+        expected = ((8, 0x212a), 'IS', 2, b'1 ', 0x8, False, True)
         de_gen = data_element_generator(infile, is_implicit_VR=False, is_little_endian=True)
         got = next(de_gen)
         msg_loc = "in read of Explicit VR='IS' data element (short length format)"
@@ -47,7 +50,7 @@ class RawReaderExplVRTests(unittest.TestCase):
         hexstr3 = " fe ff dd e0 00 00 00 00"          # Sequence Delimiter
         hexstr = hexstr1 + hexstr2 + hexstr3
         infile = BytesIO(hex2bytes(hexstr))
-        expected = ((0x7fe0, 0x10), 'OB', 0xffffffffL, 'ABCDEFGHIJ', 0xc, False, True)
+        expected = ((0x7fe0, 0x10), 'OB', 0xffffffffL, b'ABCDEFGHIJ', 0xc, False, True)
         de_gen = data_element_generator(infile, is_implicit_VR=False, is_little_endian=True)
         got = next(de_gen)
         msg_loc = "in read of undefined length Explicit VR ='OB' short value)"
@@ -66,7 +69,7 @@ class RawReaderExplVRTests(unittest.TestCase):
             msg_loc = "in read of undefined length Explicit VR ='OB' with 'multiplier' %d" % multiplier
             self.assertEqual(expected, got_len, "Expected value length %d, got %d in %s" % (expected, got_len, msg_loc))
             msg = "Unexpected value start with multiplier %d on Expl VR undefined length" % multiplier
-            self.assertTrue(got.value.startswith('ABCDEFGHIJ\0'), msg)
+            self.assertTrue(got.value.startswith(b'ABCDEFGHIJ\0'), msg)
 
 
 class RawReaderImplVRTests(unittest.TestCase):
@@ -77,7 +80,7 @@ class RawReaderImplVRTests(unittest.TestCase):
         """Raw read: Implicit VR Little Endian.................................."""
         # (0008,212a) {IS} 4-byte-length, value '1 '
         infile = BytesIO(hex2bytes("08 00 2a 21 02 00 00 00 31 20"))
-        expected = ((8, 0x212a), None, 2, '1 ', 0x8, True, True)
+        expected = ((8, 0x212a), None, 2, b'1 ', 0x8, True, True)
         de_gen = data_element_generator(infile, is_implicit_VR=True, is_little_endian=True)
         got = next(de_gen)
         msg_loc = "in read of Implicit VR='IS' data element (short length format)"
@@ -91,7 +94,7 @@ class RawReaderImplVRTests(unittest.TestCase):
         hexstr3 = " fe ff dd e0 00 00 00 00"          # Sequence Delimiter
         hexstr = hexstr1 + hexstr2 + hexstr3
         infile = BytesIO(hex2bytes(hexstr))
-        expected = ((0x7fe0, 0x10), 'OW or OB', 0xffffffffL, 'ABCDEFGHIJ', 0x8, True, True)
+        expected = ((0x7fe0, 0x10), 'OW or OB', 0xffffffffL, b'ABCDEFGHIJ', 0x8, True, True)
         de_gen = data_element_generator(infile, is_implicit_VR=True, is_little_endian=True)
         got = next(de_gen)
         msg_loc = "in read of undefined length Implicit VR ='OB' short value)"
@@ -110,7 +113,7 @@ class RawReaderImplVRTests(unittest.TestCase):
             msg_loc = "in read of undefined length Implicit VR with 'multiplier' %d" % multiplier
             self.assertEqual(expected, got_len, "Expected value length %d, got %d in %s" % (expected, got_len, msg_loc))
             msg = "Unexpected value start with multiplier %d on Implicit VR undefined length" % multiplier
-            self.assertTrue(got.value.startswith('ABCDEFGHIJ\0'), msg)
+            self.assertTrue(got.value.startswith(b'ABCDEFGHIJ\0'), msg)
 
 
 class RawSequenceTests(unittest.TestCase):
@@ -178,7 +181,7 @@ class RawSequenceTests(unittest.TestCase):
         got = seq[0].BeamNumber
         self.assertTrue(got == 1, "Expected Beam Number 1, got {0!r}".format(got))
         got = seq[1].BeamName
-        self.assert_(got == 'Beam 2', "Expected Beam Name 'Beam 2', got {0:s}".format(got))
+        self.assertTrue(got == 'Beam 2', "Expected Beam Name 'Beam 2', got {0:s}".format(got))
 
     def testImplVRBigEndian_ExplicitLengthSeq(self):
         """Raw read: ImplVR BigEndian SQ with explicit lengths.................."""
@@ -214,9 +217,9 @@ class RawSequenceTests(unittest.TestCase):
         # The sequence is parsed, but only into raw data elements.
         # They will be converted when asked for. Check some:
         got = seq[0].BeamNumber
-        self.assert_(got == 1, "Expected Beam Number 1, got {0!r}".format(got))
+        self.assertTrue(got == 1, "Expected Beam Number 1, got {0!r}".format(got))
         got = seq[1].BeamName
-        self.assert_(got == 'Beam 2', "Expected Beam Name 'Beam 2', got {0:s}".format(got))
+        self.assertTrue(got == 'Beam 2', "Expected Beam Name 'Beam 2', got {0:s}".format(got))
 
     def testExplVRBigEndian_UndefinedLengthSeq(self):
         """Raw read: ExplVR BigEndian Undefined Length SQ......................."""
@@ -263,9 +266,9 @@ class RawSequenceTests(unittest.TestCase):
         # The sequence is parsed, but only into raw data elements.
         # They will be converted when asked for. Check some:
         got = seq[0].BeamNumber
-        self.assert_(got == 1, "Expected Beam Number 1, got {0!r}".format(got))
+        self.assertTrue(got == 1, "Expected Beam Number 1, got {0!r}".format(got))
         got = seq[1].BeamName
-        self.assert_(got == 'Beam 2', "Expected Beam Name 'Beam 2', got {0:s}".format(got))
+        self.assertTrue(got == 'Beam 2', "Expected Beam Name 'Beam 2', got {0:s}".format(got))
 
 
 if __name__ == "__main__":
