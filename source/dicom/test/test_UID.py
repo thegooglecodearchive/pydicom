@@ -71,10 +71,8 @@ class UIDtests(unittest.TestCase):
         #Test invalid UID truncation (trailing dot)
         invalid_prefix=\
             '1.2.33333333333333333333333333333333333333333333333333333333333.333.'
-        with self.assertRaises(InvalidUID):
-            generate_uid(
-                prefix=invalid_prefix,
-                truncate=True)
+        self.assertRaises(InvalidUID,
+             lambda: generate_uid(prefix=invalid_prefix, truncate=True))
 
         #Test standard UID with truncate=True
         prefix='1.2.3.444444'
