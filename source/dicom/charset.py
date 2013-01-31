@@ -26,7 +26,7 @@ python_encoding = {
     'ISO_IR 127': 'iso_ir_127',  # Arab
     'ISO_IR 138': 'iso_ir_138',  # Hebrew
     'ISO_IR 144': 'iso_ir_144',  # Russian
-    }
+}
 
 default_encoding = "iso8859"
 
@@ -37,7 +37,7 @@ def clean_escseq(element, encodings):
     """
     if 'euc_kr' in encodings:
         return element.replace(
-                "\x1b\x24\x29\x43", "").replace("\x1b\x28\x42", "")
+            "\x1b\x24\x29\x43", "").replace("\x1b\x28\x42", "")
     else:
         return element
 
@@ -108,7 +108,7 @@ def decode(data_element, dicom_character_set):
                 data_element.value = PersonNameUnicode(data_element.value, encodings)
             else:
                 data_element.value = [PersonNameUnicode(value, encodings)
-                                        for value in data_element.value]
+                                      for value in data_element.value]
     if data_element.VR in text_VRs:
         # Remove the first encoding if this is a multi-byte encoding
         if len(encodings) > 1:
@@ -119,8 +119,7 @@ def decode(data_element, dicom_character_set):
             if isinstance(data_element.value, unicode):
                 return
             data_element.value = clean_escseq(
-                                    data_element.value.decode(
-                                    encodings[0]), encodings)
+                data_element.value.decode(encodings[0]), encodings)
         else:
 
             output = list()

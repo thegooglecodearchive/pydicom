@@ -2,7 +2,6 @@
 #
 import warnings
 import unittest
-from sys import version_info
 from dicom.test.version_dep import capture_warnings
 
 
@@ -19,7 +18,7 @@ def assertWarns(self, warn_msg, function, *func_args, **func_kwargs):
     Return the function return value.
     """
     result, all_warnings = capture_warnings(function, *func_args,
-                                                     **func_kwargs)
+                                            **func_kwargs)
 
     msg = "Expected one warning; got {0:d}"
     self.assertTrue(len(all_warnings) == 1, msg.format(len(all_warnings)))

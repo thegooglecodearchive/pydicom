@@ -163,7 +163,7 @@ class ImFrame(wx.Frame):
         if dlg.ShowModal() == wx.ID_OK:
             fullPath = dlg.GetPath()
             imageFile = dlg.GetFilename()
-            #checkDICMHeader()
+            # checkDICMHeader()
             self.show_file(imageFile, fullPath)
 
     def OnPaint(self, event):
@@ -179,7 +179,7 @@ class ImFrame(wx.Frame):
         dc.DrawRectangle(0, 0, windowsize[0], windowsize[1])
         bmpX0 = 0
         bmpY0 = 0
-        if(self.bitmap != None):
+        if self.bitmap is not None:
             if self.loadCentered:
                 bmpX0 = (windowsize[0] - self.bitmap.Width) / 2
                 bmpY0 = (windowsize[1] - self.bitmap.Height) / 2
@@ -228,7 +228,7 @@ class ImFrame(wx.Frame):
                             [data <= (level - 0.5 - (window - 1) / 2),
                              data > (level - 0.5 + (window - 1) / 2)],
                             [0, 255, lambda data: ((data - (level - 0.5)) / (window - 1) + 0.5) * (255 - 0)]
-                           )
+                            )
 
     #-----------------------------------------------------------
     # ImFrame.loadPIL_LUT(dataset)
@@ -268,7 +268,7 @@ class ImFrame(wx.Frame):
         self.populateTree(ds)
         if 'PixelData' in ds:
             self.dImage = self.loadPIL_LUT(ds)
-            if self.dImage != None:
+            if self.dImage is not None:
                 tmpImage = self.ConvertPILToWX(self.dImage, False)
                 self.bitmap = wx.BitmapFromImage(tmpImage)
                 self.Refresh()

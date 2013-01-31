@@ -16,19 +16,18 @@ import shutil
 # Not sure if on other platforms the import fails, or the call to it??
 stat_available = True
 try:
-    from os import stat
+    from os import stat  # NOQA
 except:
     stat_available = False
 
 have_numpy = True
 try:
-    import numpy
+    import numpy  # NOQA
 except:
     have_numpy = False
-from dicom.filereader import read_file, data_element_generator, InvalidDicomError
-from dicom.values import convert_value
+from dicom.filereader import read_file
+from dicom.errors import InvalidDicomError
 from dicom.tag import Tag, TupleTag
-from dicom.sequence import Sequence
 import dicom.valuerep
 import gzip
 
@@ -79,24 +78,24 @@ class ReaderTests(unittest.TestCase):
 
         self.assertEqual(beam.TreatmentMachineName, "unit001", "Incorrect unit name")
         self.assertEqual(beam.TreatmentMachineName, beam[0x300a, 0x00b2].value,
-                "beam TreatmentMachineName does not match the value accessed by tag number")
+                         "beam TreatmentMachineName does not match the value accessed by tag number")
 
         got = cp1.ReferencedDoseReferenceSequence[0].CumulativeDoseReferenceCoefficient
         DS = dicom.valuerep.DS
         expected = DS('0.9990268')
         self.assertTrue(got == expected,
-                "Cum Dose Ref Coeff not the expected value (CP1, Ref'd Dose Ref")
+                        "Cum Dose Ref Coeff not the expected value (CP1, Ref'd Dose Ref")
         got = cp0.BeamLimitingDevicePositionSequence[0].LeafJawPositions
         self.assertTrue(got[0] == DS('-100') and got[1] == DS('100.0'),
-                "X jaws not as expected (control point 0)")
+                        "X jaws not as expected (control point 0)")
 
     def testRTDose(self):
         """Returns correct values for sample data elements in test RT Dose file"""
         dose = read_file(rtdose_name)
         self.assertEqual(dose.FrameIncrementPointer, Tag((0x3004, 0x000c)),
-                "Frame Increment Pointer not the expected value")
+                         "Frame Increment Pointer not the expected value")
         self.assertEqual(dose.FrameIncrementPointer, dose[0x28, 9].value,
-                "FrameIncrementPointer does not match the value accessed by tag number")
+                         "FrameIncrementPointer does not match the value accessed by tag number")
 
         # try a value that is nested the deepest (so deep I break it into two steps!)
         fract = dose.ReferencedRTPlanSequence[0].ReferencedFractionGroupSequence[0]
@@ -107,10 +106,10 @@ class ReaderTests(unittest.TestCase):
         """Returns correct values for sample data elements in test CT file...."""
         ct = read_file(ct_name)
         self.assertEqual(ct.file_meta.ImplementationClassUID, '1.3.6.1.4.1.5962.2',
-                "ImplementationClassUID not the expected value")
+                         "ImplementationClassUID not the expected value")
         self.assertEqual(ct.file_meta.ImplementationClassUID,
-                        ct.file_meta[0x2, 0x12].value,
-                "ImplementationClassUID does not match the value accessed by tag number")
+                         ct.file_meta[0x2, 0x12].value,
+                         "ImplementationClassUID does not match the value accessed by tag number")
         # (0020, 0032) Image Position (Patient)  [-158.13580300000001, -179.035797, -75.699996999999996]
         got = ct.ImagePositionPatient
         DS = dicom.valuerep.DS
@@ -177,7 +176,7 @@ class ReaderTests(unittest.TestCase):
         # sample some expected 'dir' values
         got_dir = dir(rtss)
         expect_in_dir = ['pixel_array', 'add_new', 'ROIContourSequence',
-                            'StructureSetDate', '__sizeof__']
+                         'StructureSetDate', '__sizeof__']
         expect_not_in_dir = ['RemovePrivateTags', 'AddNew', 'GroupDataset']  # remove in v1.0
         for name in expect_in_dir:
             self.assertTrue(name in got_dir, "Expected name '%s' in dir()" % name)
@@ -187,7 +186,7 @@ class ReaderTests(unittest.TestCase):
         roi0 = rtss.ROIContourSequence[0]
         got_dir = dir(roi0)
         expect_in_dir = ['pixel_array', 'add_new', 'ReferencedROINumber',
-                            'ROIDisplayColor', '__sizeof__']
+                         'ROIDisplayColor', '__sizeof__']
         for name in expect_in_dir:
             self.assertTrue(name in got_dir, "Expected name '%s' in dir()" % name)
 
@@ -198,7 +197,7 @@ class ReaderTests(unittest.TestCase):
         mr.decode()
         self.assertEqual(mr.PatientName, 'CompressedSamples^MR1', "Wrong patient name")
         self.assertEqual(mr.PatientName, mr[0x10, 0x10].value,
-                "Name does not match value found when accessed by tag number")
+                         "Name does not match value found when accessed by tag number")
         got = mr.PixelSpacing
         DS = dicom.valuerep.DS
         expected = [DS('0.3125'), DS('0.3125')]
@@ -231,7 +230,7 @@ class ReaderTests(unittest.TestCase):
         #    and there is no such tag, generating an exception
 
         # Simply read the file, in 0.9.5 this generated an exception
-        priv_SQ = read_file(priv_SQ_name)
+        read_file(priv_SQ_name)
 
     def testNestedPrivateSQ(self):
         """Can successfully read a private SQ which contains additional SQ's....."""
@@ -246,29 +245,29 @@ class ReaderTests(unittest.TestCase):
         # Make sure that the entire dataset was read in
         pixel_data_tag = TupleTag((0x7fe0, 0x10))
         self.assertTrue(pixel_data_tag in ds,
-                "Entire dataset was not parsed properly. PixelData is not present")
+                        "Entire dataset was not parsed properly. PixelData is not present")
 
         # Check that the DataElement is indeed a Sequence
         tag = TupleTag((0x01, 0x01))
         seq0 = ds[tag]
         self.assertEqual(seq0.VR, 'SQ',
-                "First level sequence not parsed properly")
+                         "First level sequence not parsed properly")
 
         # Now verify the presence of the nested private SQ
         seq1 = seq0[0][tag]
         self.assertEqual(seq1.VR, 'SQ',
-                "Second level sequence not parsed properly")
+                         "Second level sequence not parsed properly")
 
         # Now make sure the values that are parsed are correct
         got = seq1[0][tag].value
         expected = b'Double Nested SQ'
         self.assertEqual(got, expected,
-                "Expected a value of %s, got %s'" % (expected, got))
+                         "Expected a value of %s, got %s'" % (expected, got))
 
         got = seq0[0][0x01, 0x02].value
         expected = b'Nested SQ'
         self.assertEqual(got, expected,
-                "Expected a value of %s, got %s'" % (expected, got))
+                         "Expected a value of %s, got %s'" % (expected, got))
 
     def testNoMetaGroupLength(self):
         """Read file with no group length in file meta..........................."""
@@ -352,7 +351,7 @@ class DeferredReadTests(unittest.TestCase):
             warning_start = "Deferred read warning -- file modification time "
 
             def read_value():
-                data_elem = ds.PixelData
+                ds.PixelData
 
             assertWarns(self, warning_start, read_value)
 
@@ -362,7 +361,7 @@ class DeferredReadTests(unittest.TestCase):
         os.remove(self.testfile_name)
 
         def read_value():
-            data_elem = ds.PixelData
+            ds.PixelData
 
         self.assertRaises(IOError, read_value)
 
@@ -382,7 +381,7 @@ class DeferredReadTests(unittest.TestCase):
         fobj.close()
         # before the fix, this threw an error as file reading was not in right place,
         #    it was re-opened as a normal file, not zip file
-        num = ds.InstanceNumber
+        ds.InstanceNumber
 
     def tearDown(self):
         if os.path.exists(self.testfile_name):
@@ -401,10 +400,10 @@ class FileLikeTests(unittest.TestCase):
         expected = [DS('-158.135803'), DS('-179.035797'), DS('-75.699997')]
         self.assertTrue(got == expected, "ImagePosition(Patient) values not as expected")
         self.assertEqual(ct.file_meta.ImplementationClassUID, '1.3.6.1.4.1.5962.2',
-                "ImplementationClassUID not the expected value")
+                         "ImplementationClassUID not the expected value")
         self.assertEqual(ct.file_meta.ImplementationClassUID,
-                        ct.file_meta[0x2, 0x12].value,
-                "ImplementationClassUID does not match the value accessed by tag number")
+                         ct.file_meta[0x2, 0x12].value,
+                         "ImplementationClassUID does not match the value accessed by tag number")
         # (0020, 0032) Image Position (Patient)  [-158.13580300000001, -179.035797, -75.699996999999996]
         got = ct.ImagePositionPatient
         expected = [DS('-158.135803'), DS('-179.035797'), DS('-75.699997')]

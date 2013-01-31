@@ -13,7 +13,7 @@ Dataset(derived class of Python's dict class)
 
 """
 #
-# Copyright (c) 2008-2012 Darcy Mason
+# Copyright (c) 2008-2013 Darcy Mason
 # This file is part of pydicom, released under a modified MIT license.
 #    See the file license.txt included with this distribution, also
 #    available at http://pydicom.googlecode.com
@@ -241,11 +241,11 @@ class Dataset(dict):
         tag = tag_for_name(name)
         if tag is None:
             raise AttributeError("Dataset does not have attribute "
-                                    "'{0:s}'.".format(name))
+                                 "'{0:s}'.".format(name))
         tag = Tag(tag)
         if tag not in self:
             raise AttributeError("Dataset does not have attribute "
-                                    "'{0:s}'.".format(name))
+                                 "'{0:s}'.".format(name))
         else:  # do have that dicom data_element
             return self[tag].value
 
@@ -275,7 +275,7 @@ class Dataset(dict):
             if data_elem.value is None:
                 from dicom.filereader import read_deferred_data_element
                 data_elem = read_deferred_data_element(self.fileobj_type,
-                                    self.filename, self.timestamp, data_elem)
+                                                       self.filename, self.timestamp, data_elem)
 
             if tag != (0x08, 0x05):
                 character_set = self._character_set
@@ -294,7 +294,7 @@ class Dataset(dict):
         """
         ds = Dataset()
         ds.update(dict([(tag, data_element) for tag, data_element in self.items()
-                                if tag.group == group]))
+                        if tag.group == group]))
         return ds
 
     def __iter__(self):
@@ -395,7 +395,7 @@ class Dataset(dict):
         except AttributeError:
             t, e, tb = sys.exc_info()
             raise PropertyError("AttributeError in pixel_array property: " + \
-                            e.args[0]), None, tb
+                                e.args[0]), None, tb
 
     # Format strings spec'd according to python string formatting options
     #    See http://docs.python.org/library/stdtypes.html#string-formatting-operations
@@ -418,35 +418,35 @@ class Dataset(dict):
             #   gets descriptive text name too)
             # This is the dictionary of names that can be used in the format string
             elem_dict = dict([(x, getattr(data_element, x)()
-                           if callable(getattr(data_element, x))
-                           else getattr(data_element, x))
-                           for x in dir(data_element) if not x.startswith("_")])
+                               if callable(getattr(data_element, x))
+                               else getattr(data_element, x))
+                              for x in dir(data_element) if not x.startswith("_")])
             if data_element.VR == "SQ":
                 yield sequence_element_format % elem_dict
             else:
                 yield element_format % elem_dict
 
-    def _pretty_str(self, indent=0, topLevelOnly=False):
+    def _pretty_str(self, indent=0, top_level_only=False):
         """Return a string of the data_elements in this dataset, with indented levels.
 
         This private method is called by the __str__() method
         for handling print statements or str(dataset), and the __repr__() method.
-        It is also used by top(), which is the reason for the topLevelOnly flag.
+        It is also used by top(), which is the reason for the top_level_only flag.
         This function recurses, with increasing indentation levels.
 
         """
         strings = []
-        indentStr = self.indent_chars * indent
-        nextIndentStr = self.indent_chars * (indent + 1)
+        indent_str = self.indent_chars * indent
+        nextindent_str = self.indent_chars * (indent + 1)
         for data_element in self:
             if data_element.VR == "SQ":   # a sequence
-                strings.append(indentStr + str(data_element.tag) + "  %s   %i item(s) ---- " % (data_element.description(), len(data_element.value)))
-                if not topLevelOnly:
+                strings.append(indent_str + str(data_element.tag) + "  %s   %i item(s) ---- " % (data_element.description(), len(data_element.value)))
+                if not top_level_only:
                     for dataset in data_element.value:
                         strings.append(dataset._pretty_str(indent + 1))
-                        strings.append(nextIndentStr + "---------")
+                        strings.append(nextindent_str + "---------")
             else:
-                strings.append(indentStr + repr(data_element))
+                strings.append(indent_str + repr(data_element))
         return "\n".join(strings)
 
     def remove_private_tags(self):
@@ -458,13 +458,13 @@ class Dataset(dict):
                 del dataset[data_element.tag]
         self.walk(RemoveCallback)
 
-    def save_as(self, filename, WriteLikeOriginal=True):
+    def save_as(self, filename, write_like_original=True):
         """Write the dataset to a file.
 
-        filename -- full path and filename to save the file to
-        WriteLikeOriginal -- see dicom.filewriter.write_file for info on this parameter.
+        :param filename: full path and filename to save the file to
+        :write_like_original: see dicom.filewriter.write_file for info on this parameter.
         """
-        dicom.write_file(filename, self, WriteLikeOriginal)
+        dicom.write_file(filename, self, write_like_original)
 
     def __setattr__(self, name, value):
         """Intercept any attempts to set a value for an instance attribute.
@@ -492,7 +492,7 @@ class Dataset(dict):
         """Operator for dataset[key]=value. Check consistency, and deal with private tags"""
         if not isinstance(value, (DataElement, RawDataElement)):  # ok if is subclass, e.g. DeferredDataElement
             raise TypeError("Dataset contents must be DataElement instances.\n" + \
-                  "To set a data_element value use data_element.value=val")
+                            "To set a data_element value use data_element.value=val")
         tag = Tag(value.tag)
         if key != tag:
             raise ValueError("data_element.tag must match the dictionary key")
@@ -515,7 +515,7 @@ class Dataset(dict):
 
     def top(self):
         """Show the DICOM tags, but only the top level; do not recurse into Sequences"""
-        return self._pretty_str(topLevelOnly=True)
+        return self._pretty_str(top_level_only=True)
 
     def trait_names(self):
         """Return a list of valid names for auto-completion code
@@ -578,7 +578,7 @@ class Dataset(dict):
 
 class FileDataset(Dataset):
     def __init__(self, filename_or_obj, dataset, preamble=None, file_meta=None,
-                        is_implicit_VR=True, is_little_endian=True):
+                 is_implicit_VR=True, is_little_endian=True):
         """Initialize a dataset read from a DICOM file
 
         :param filename: full path and filename to the file. Use None if is a BytesIO.

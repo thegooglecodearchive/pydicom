@@ -177,7 +177,7 @@ def _splitSerieIfRequired(serie, series):
 
         # Get distances
         newDist = abs(pos1 - pos2)
-        #deltaDist = abs(firstPos-pos2)
+        # deltaDist = abs(firstPos-pos2)
 
         # If the distance deviates more than 2x from what we've seen,
         # we can agree it's a new dataset.
@@ -542,7 +542,7 @@ class DicomSeries(object):
         # Init data (using what the dicom packaged produces as a reference)
         ds = self._datasets[0]
         slice = _getPixelDataFromDataset(ds)
-        #vol = Aarray(self.shape, self.sampling, fill=0, dtype=slice.dtype)
+        # vol = Aarray(self.shape, self.sampling, fill=0, dtype=slice.dtype)
         vol = np.zeros(self.shape, dtype=slice.dtype)
         vol[0] = slice
 
@@ -656,7 +656,7 @@ class DicomSeries(object):
         # Store information that is specific for the serie
         self._shape = [len(L), ds2.Rows, ds2.Columns]
         self._sampling = [distance_mean, float(ds2.PixelSpacing[0]),
-                               float(ds2.PixelSpacing[1])]
+                          float(ds2.PixelSpacing[1])]
 
         # Store
         self._info = info

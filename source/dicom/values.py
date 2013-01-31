@@ -47,7 +47,7 @@ def convert_ATvalue(byte_string, is_little_endian, struct_format=None):
     if length % 4 != 0:
         logger.warn("Expected length to be multiple of 4 for VR 'AT', got length %d at file position 0x%x", length, fp.tell() - 4)
     return MultiValue(Tag, [convert_tag(byte_string, is_little_endian, offset=x)
-                        for x in range(0, length, 4)])
+                            for x in range(0, length, 4)])
 
 
 def convert_DS_string(byte_string, is_little_endian, struct_format=None):
@@ -198,40 +198,41 @@ def convert_value(VR, raw_data_element, encoding=default_encoding):
 # converters map a VR to the function to read the value(s).
 # for convert_numbers, the converter maps to a tuple (function, struct_format)
 #                        (struct_format in python struct module style)
-converters = {'UL': (convert_numbers, 'L'),
-            'SL': (convert_numbers, 'l'),
-            'US': (convert_numbers, 'H'),
-            'SS': (convert_numbers, 'h'),
-            'FL': (convert_numbers, 'f'),
-            'FD': (convert_numbers, 'd'),
-            'OF': (convert_numbers, 'f'),
-            'OB': convert_OBvalue,
-            'UI': convert_UI,
-            'SH': convert_string,
-            'DA': convert_string,
-            'TM': convert_string,
-            'CS': convert_string,
-            'PN': convert_PN,
-            'LO': convert_string,
-            'IS': convert_IS_string,
-            'DS': convert_DS_string,
-            'AE': convert_string,
-            'AS': convert_string,
-            'LT': convert_single_string,
-            'SQ': convert_SQ,
-            'UN': convert_UN,
-            'AT': convert_ATvalue,
-            'ST': convert_string,
-            'OW': convert_OWvalue,
-            'OW/OB': convert_OBvalue,  # note OW/OB depends on other items, which we don't know at read time
-            'OB/OW': convert_OBvalue,
-            'OW or OB': convert_OBvalue,
-            'OB or OW': convert_OBvalue,
-            'US or SS': convert_OWvalue,
-            'US or SS or OW': convert_OWvalue,
-            'US\\US or SS\\US': convert_OWvalue,
-            'DT': convert_string,
-            'UT': convert_single_string,
-           }
+converters = {
+    'UL': (convert_numbers, 'L'),
+    'SL': (convert_numbers, 'l'),
+    'US': (convert_numbers, 'H'),
+    'SS': (convert_numbers, 'h'),
+    'FL': (convert_numbers, 'f'),
+    'FD': (convert_numbers, 'd'),
+    'OF': (convert_numbers, 'f'),
+    'OB': convert_OBvalue,
+    'UI': convert_UI,
+    'SH': convert_string,
+    'DA': convert_string,
+    'TM': convert_string,
+    'CS': convert_string,
+    'PN': convert_PN,
+    'LO': convert_string,
+    'IS': convert_IS_string,
+    'DS': convert_DS_string,
+    'AE': convert_string,
+    'AS': convert_string,
+    'LT': convert_single_string,
+    'SQ': convert_SQ,
+    'UN': convert_UN,
+    'AT': convert_ATvalue,
+    'ST': convert_string,
+    'OW': convert_OWvalue,
+    'OW/OB': convert_OBvalue,  # note OW/OB depends on other items, which we don't know at read time
+    'OB/OW': convert_OBvalue,
+    'OW or OB': convert_OBvalue,
+    'OB or OW': convert_OBvalue,
+    'US or SS': convert_OWvalue,
+    'US or SS or OW': convert_OWvalue,
+    'US\\US or SS\\US': convert_OWvalue,
+    'DT': convert_string,
+    'UT': convert_single_string,
+}
 if __name__ == "__main__":
     pass
