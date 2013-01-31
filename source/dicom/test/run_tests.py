@@ -23,14 +23,14 @@ class MyTestLoader(object):
             os.chdir(test_dir)
         filenames = os.listdir(".")
         module_names = [f[:-3] for f in filenames
-                       if f.startswith("test") and f.endswith(".py")]
+                        if f.startswith("test") and f.endswith(".py")]
 
         # Load all the tests
         suite = unittest.TestSuite()
         for module_name in module_names:
             module_dotted_name = "dicom.test." + module_name
             test = unittest.defaultTestLoader.loadTestsFromName(
-                                                            module_dotted_name)
+                module_dotted_name)
             suite.addTest(test)
         os.chdir(save_dir)
         return suite
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # Switch directories to test DICOM files, used by many of the tests
     save_dir = os.getcwd()
     testfiles_dir = resource_filename(Requirement.parse("pydicom"),
-                                                            "dicom/testfiles")
+                                      "dicom/testfiles")
     os.chdir(testfiles_dir)
     runner.run(suite)
     os.chdir(save_dir)

@@ -66,8 +66,8 @@ debug(False)  # force level=WARNING, in case logging default is set differently 
 
 # For convenience, import the read_file and write_file functions (most used)
 #     into the "dicom" namespace.
-from dicom.filereader import read_file
+from dicom.filereader import read_file, read_dicomdir
 from dicom.filewriter import write_file
 
-__version__ = "0.9.8rc1"
+__version__ = "0.9.8"
 __version_info__ = (0, 9, 8)

@@ -1,3 +1,10 @@
+# dcm_qt_tree.py
+"""View DICOM files in a tree using Qt and PySide"""
+# Copyright (c) 2013 Padraig Looney
+# This file is released under the pydicom (http://code.google.com/p/pydicom/)
+# license, see the file license.txt available at
+# (http://code.google.com/p/pydicom/)
+
 import dicom
 import sys
 from PySide import QtGui
@@ -44,7 +51,7 @@ class DicomTree:
         for k in dic:
             v = dic[k]
             if isinstance(v, dict):
-                item = QtGui.QStandardItem(k+':'+str(v))
+                item = QtGqui.QStandardItem(k + ':' + str(v))
                 parent.appendRow(self.recurse_dic_to_item(v, item))
             else:
                 item = QtGui.QStandardItem(k + ': ' + str(v))
@@ -52,7 +59,7 @@ class DicomTree:
         return parent
 
     def dicom_to_dataset(self, filename):
-        dataset = dicom.read_file(filename)
+        dataset = dicom.read_file(filename, force=True)
         return dataset
 
     def data_element_to_dic(self, data_element):

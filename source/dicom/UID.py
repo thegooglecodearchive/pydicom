@@ -142,7 +142,7 @@ NotCompressedPixelTransferSyntaxes = [ExplicitVRLittleEndian,
 pydicom_root_UID = '1.2.826.0.1.3680043.8.498.'
 pydicom_UIDs = {
     pydicom_root_UID + '1': 'ImplementationClassUID',
-    }
+}
 
 
 def generate_uid(prefix=pydicom_root_UID, truncate=False):
@@ -172,9 +172,9 @@ def generate_uid(prefix=pydicom_root_UID, truncate=False):
         dicom_uid = '2.25.{0}'.format(uuid.uuid1().int)
     else:
         uid_info = [uuid.getnode(),
-            fabs(os.getpid()),
-            datetime.datetime.today().second,
-            datetime.datetime.today().microsecond]
+                    fabs(os.getpid()),
+                    datetime.datetime.today().second,
+                    datetime.datetime.today().microsecond]  # nopep8
 
         suffix = ''.join([str(long(x)) for x in uid_info])
         dicom_uid = ''.join([prefix, suffix])
@@ -184,7 +184,7 @@ def generate_uid(prefix=pydicom_root_UID, truncate=False):
 
     dicom_uid = UID(dicom_uid)
 
-    #This will raise an exception if the UID is invalid
+    # This will raise an exception if the UID is invalid
     dicom_uid.is_valid()
 
     return dicom_uid

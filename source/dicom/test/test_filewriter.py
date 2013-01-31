@@ -11,7 +11,6 @@ import os
 import unittest
 from dicom.filereader import read_file
 from dicom.filewriter import write_data_element
-from dicom.tag import Tag
 from dicom.dataset import Dataset, FileDataset
 from dicom.sequence import Sequence
 from dicom.util.hexutil import hex2bytes, bytes2hex
@@ -19,12 +18,11 @@ from dicom.util.hexutil import hex2bytes, bytes2hex
 # from io import BytesIO
 from dicom.filebase import DicomBytesIO
 from dicom.dataelem import DataElement
-from dicom.util.hexutil import hex2bytes, bytes2hex
 
 from pkg_resources import Requirement, resource_filename
 test_dir = resource_filename(Requirement.parse("pydicom"), "dicom/testfiles")
 testcharset_dir = resource_filename(Requirement.parse("pydicom"),
-                                                    "dicom/testcharsetfiles")
+                                    "dicom/testcharsetfiles")
 
 rtplan_name = os.path.join(test_dir, "rtplan.dcm")
 rtdose_name = os.path.join(test_dir, "rtdose.dcm")
@@ -36,8 +34,13 @@ unicode_name = os.path.join(testcharset_dir, "chrH31.dcm")
 multiPN_name = os.path.join(testcharset_dir, "chrFrenMulti.dcm")
 
 # Set up rtplan_out, rtdose_out etc. Filenames as above, with '2' appended
-for inname in ['rtplan', 'rtdose', 'ct', 'mr', 'jpeg', 'unicode', 'multiPN']:
-    exec(inname + "_out = " + inname + "_name + '2'")
+rtplan_out = rtplan_name + '2'
+rtdose_out = rtdose_name + '2'
+ct_out = ct_name + '2'
+mr_out = mr_name + '2'
+jpeg_out = jpeg_name + '2'
+unicode_out = unicode_name + '2'
+multiPN_out = multiPN_name + '2'
 
 
 def files_identical(a, b):
@@ -70,7 +73,7 @@ class WriteFileTests(unittest.TestCase):
         dataset.save_as(out_filename)
         same, pos = files_identical(in_filename, out_filename)
         self.assertTrue(same,
-            "Files are not identical - first difference at 0x%x" % pos)
+                        "Files are not identical - first difference at 0x%x" % pos)
         if os.path.exists(out_filename):
             os.remove(out_filename)  # get rid of the file
 
@@ -115,11 +118,11 @@ class WriteFileTests(unittest.TestCase):
         # Now read it back in and check that the values were changed
         ds = read_file(ct_out)
         self.assertTrue(ds.ImageType[1] == CS_expected,
-                "Item in a list not written correctly to file (VR=CS)")
+                        "Item in a list not written correctly to file (VR=CS)")
         self.assertTrue(ds[0x00431012].value[0] == SS_expected,
-                "Item in a list not written correctly to file (VR=SS)")
+                        "Item in a list not written correctly to file (VR=SS)")
         self.assertTrue(ds.ImagePositionPatient[2] == DS_expected,
-                "Item in a list not written correctly to file (VR=DS)")
+                        "Item in a list not written correctly to file (VR=DS)")
         if os.path.exists(ct_out):
             os.remove(ct_out)
 
@@ -139,11 +142,11 @@ class WriteDataElementTests(unittest.TestCase):
         expected = hex2bytes((
             " 28 00 09 00"   # (0028,0009) Frame Increment Pointer
             " 00 00 00 00"   # length 0
-            ))
+        ))
         write_data_element(self.f1, data_elem)
         got = self.f1.parent.getvalue()
         msg = ("Did not write zero-length AT value correctly. "
-            "Expected %r, got %r") % (bytes2hex(expected), bytes2hex(got))
+               "Expected %r, got %r") % (bytes2hex(expected), bytes2hex(got))
         msg = "%r %r" % (type(expected), type(got))
         msg = "'%r' '%r'" % (expected, got)
         self.assertEqual(expected, got, msg)
@@ -188,7 +191,7 @@ class ScratchWriteTests(unittest.TestCase):
         # print "written:", bytes2hex(bytes_written)
         same, pos = bytes_identical(std, bytes_written)
         self.assertTrue(same,
-            "Writing from scratch unexpected result - 1st diff at 0x%x" % pos)
+                        "Writing from scratch unexpected result - 1st diff at 0x%x" % pos)
         if os.path.exists(out_filename):
             os.remove(out_filename)  # get rid of the file
 

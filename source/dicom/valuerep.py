@@ -99,17 +99,17 @@ class DSdecimal(Decimal):
             return val
         if isinstance(val, float) and not dicom.config.allow_DS_float:
             msg = ("DS cannot be instantiated with a float value, unless "
-                "config.allow_DS_float is set to True. It is recommended to "
-                "convert to a string instead, with the desired number of digits, "
-                "or use Decimal.quantize and pass a Decimal instance.")
+                   "config.allow_DS_float is set to True. It is recommended to "
+                   "convert to a string instead, with the desired number of digits, "
+                   "or use Decimal.quantize and pass a Decimal instance.")
             raise TypeError(msg)
         if not isinstance(val, Decimal):
             val = super(DSdecimal, cls).__new__(cls, val)
         if len(str(val)) > 16 and enforce_length:
             msg = ("DS value representation must be <= 16 characters by DICOM "
-                "standard. Initialize with a smaller string, or set config.enforce_valid_values "
-                "to False to override, "
-                "or use Decimal.quantize() and initialize with a Decimal instance.")
+                   "standard. Initialize with a smaller string, or set config.enforce_valid_values "
+                   "to False to override, "
+                   "or use Decimal.quantize() and initialize with a Decimal instance.")
             raise OverflowError(msg)
         return val
 
@@ -254,7 +254,7 @@ class PersonName3(object):
             comps = self.components
         else:
             comps = [clean_escseq(comp.decode(enc), encodings)
-                        for comp, enc in zip(self.components, encodings)]
+                     for comp, enc in zip(self.components, encodings)]
 
         while len(comps) and not comps[-1]:
             comps.pop()
@@ -333,8 +333,8 @@ class PersonNameBase(object):
         if self.single_byte:
             name_string = self.single_byte + "^^^^"  # in case missing trailing items are left out
             parts = name_string.split("^")[:5]
-            (self.family_name, self.given_name, self.middle_name,
-                               self.name_prefix, self.name_suffix) = parts
+            self.family_name, self.given_name, self.middle_name = parts[:3]
+            self.name_prefix, self.name_suffix = parts[3:]
         else:
             (self.family_name, self.given_name, self.middle_name,
                 self.name_prefix, self.name_suffix) = ('', '', '', '', '')
@@ -398,7 +398,7 @@ class PersonNameUnicode(PersonNameBase, unicode):
             del encodings[0]
 
         comps = [clean_escseq(C.decode(enc), encodings)
-                    for C, enc in zip(components, encodings)]
+                 for C, enc in zip(components, encodings)]
         new_val = u"=".join(comps)
 
         return unicode.__new__(cls, new_val)

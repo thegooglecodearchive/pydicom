@@ -7,7 +7,6 @@
 
 from io import BytesIO
 import unittest
-from dicom import in_py3
 from dicom.filereader import data_element_generator
 from dicom.values import convert_value
 from dicom.sequence import Sequence
@@ -122,15 +121,15 @@ class RawSequenceTests(unittest.TestCase):
         """Read sequence with a single empty item..............................."""
         # This is fix for issue 27
         hexstr = (
-             "08 00 32 10"    # (0008, 1032) SQ "Procedure Code Sequence"
+            "08 00 32 10"    # (0008, 1032) SQ "Procedure Code Sequence"
             " 08 00 00 00"    # length 8
             " fe ff 00 e0"    # (fffe, e000) Item Tag
             " 00 00 00 00"    # length = 0
-            ) + (             # --------------- end of Sequence
-            " 08 00 3e 10"    # (0008, 103e) LO "Series Description"
-            " 0c 00 00 00"    # length
-            " 52 20 41 44 44 20 56 49 45 57 53 20"  # value
-            )
+        ) + (             # --------------- end of Sequence
+            " 08 00 3e 10"    # (0008, 103e) LO "Series Description"  nopep8
+            " 0c 00 00 00"    # length     nopep8
+            " 52 20 41 44 44 20 56 49 45 57 53 20"  # value     nopep8
+        )
         # "\x08\x00\x32\x10\x08\x00\x00\x00\xfe\xff\x00\xe0\x00\x00\x00\x00" # from issue 27, procedure code sequence (0008,1032)
         # hexstr += "\x08\x00\x3e\x10\x0c\x00\x00\x00\x52\x20\x41\x44\x44\x20\x56\x49\x45\x57\x53\x20" # data element following
 
@@ -152,24 +151,24 @@ class RawSequenceTests(unittest.TestCase):
         hexstr = (
             "0a 30 B0 00"    # (300a, 00b0) Beam Sequence
             " 40 00 00 00"    # length
-                " fe ff 00 e0"    # (fffe, e000) Item Tag
-                " 18 00 00 00"    # Item (dataset) Length
-                " 0a 30 c0 00"    # (300A, 00C0) Beam Number
-                " 02 00 00 00"    # length
-                " 31 20"          # value '1 '
-                " 0a 30 c2 00"    # (300A, 00C2) Beam Name
-                " 06 00 00 00"    # length
-                " 42 65 61 6d 20 31"  # value 'Beam 1'
-                # -------------
-                " fe ff 00 e0"    # (fffe, e000) Item Tag
-                " 18 00 00 00"    # Item (dataset) Length
-                " 0a 30 c0 00"    # (300A, 00C0) Beam Number
-                " 02 00 00 00"    # length
-                " 32 20"          # value '2 '
-                " 0a 30 c2 00"    # (300A, 00C2) Beam Name
-                " 06 00 00 00"    # length
-                " 42 65 61 6d 20 32"  # value 'Beam 2'
-                )
+            " fe ff 00 e0"    # (fffe, e000) Item Tag
+            " 18 00 00 00"    # Item (dataset) Length
+            " 0a 30 c0 00"    # (300A, 00C0) Beam Number
+            " 02 00 00 00"    # length
+            " 31 20"          # value '1 '
+            " 0a 30 c2 00"    # (300A, 00C2) Beam Name
+            " 06 00 00 00"    # length
+            " 42 65 61 6d 20 31"  # value 'Beam 1'
+            # -------------
+            " fe ff 00 e0"    # (fffe, e000) Item Tag
+            " 18 00 00 00"    # Item (dataset) Length
+            " 0a 30 c0 00"    # (300A, 00C0) Beam Number
+            " 02 00 00 00"    # length
+            " 32 20"          # value '2 '
+            " 0a 30 c2 00"    # (300A, 00C2) Beam Name
+            " 06 00 00 00"    # length
+            " 42 65 61 6d 20 32"  # value 'Beam 2'
+        )
 
         infile = BytesIO(hex2bytes(hexstr))
         de_gen = data_element_generator(infile, is_implicit_VR=True, is_little_endian=True)
@@ -190,24 +189,24 @@ class RawSequenceTests(unittest.TestCase):
         hexstr = (
             "30 0a 00 B0"    # (300a, 00b0) Beam Sequence
             " 00 00 00 40"    # length
-                " ff fe e0 00"    # (fffe, e000) Item Tag
-                " 00 00 00 18"    # Item (dataset) Length
-                " 30 0a 00 c0"    # (300A, 00C0) Beam Number
-                " 00 00 00 02"    # length
-                " 31 20"          # value '1 '
-                " 30 0a 00 c2"    # (300A, 00C2) Beam Name
-                " 00 00 00 06"    # length
-                " 42 65 61 6d 20 31"  # value 'Beam 1'
-                # -------------
-                " ff fe e0 00"    # (fffe, e000) Item Tag
-                " 00 00 00 18"    # Item (dataset) Length
-                " 30 0a 00 c0"    # (300A, 00C0) Beam Number
-                " 00 00 00 02"    # length
-                " 32 20"          # value '2 '
-                " 30 0a 00 c2"    # (300A, 00C2) Beam Name
-                " 00 00 00 06"    # length
-                " 42 65 61 6d 20 32"  # value 'Beam 2'
-                )
+            " ff fe e0 00"    # (fffe, e000) Item Tag
+            " 00 00 00 18"    # Item (dataset) Length
+            " 30 0a 00 c0"    # (300A, 00C0) Beam Number
+            " 00 00 00 02"    # length
+            " 31 20"          # value '1 '
+            " 30 0a 00 c2"    # (300A, 00C2) Beam Name
+            " 00 00 00 06"    # length
+            " 42 65 61 6d 20 31"  # value 'Beam 1'
+            # -------------
+            " ff fe e0 00"    # (fffe, e000) Item Tag
+            " 00 00 00 18"    # Item (dataset) Length
+            " 30 0a 00 c0"    # (300A, 00C0) Beam Number
+            " 00 00 00 02"    # length
+            " 32 20"          # value '2 '
+            " 30 0a 00 c2"    # (300A, 00C2) Beam Name
+            " 00 00 00 06"    # length
+            " 42 65 61 6d 20 32"  # value 'Beam 2'
+        )
 
         infile = BytesIO(hex2bytes(hexstr))
         de_gen = data_element_generator(infile, is_implicit_VR=True, is_little_endian=False)
@@ -225,37 +224,35 @@ class RawSequenceTests(unittest.TestCase):
         """Raw read: ExplVR BigEndian Undefined Length SQ......................."""
         # Create a fictional sequence with bytes directly,
         #    similar to PS 3.5-2008 Table 7.5-2 p42
-        item1_value_bytes = "\1" * 126
-        item2_value_bytes = "\2" * 222
         hexstr = (
             "30 0a 00 B0"    # (300a, 00b0) Beam Sequence
             " 53 51"         # SQ
             " 00 00"         # reserved
             " ff ff ff ff"    # undefined length
-                " ff fe e0 00"    # (fffe, e000) Item Tag
-                " 00 00 00 18"    # Item (dataset) Length
-                " 30 0a 00 c0"    # (300A, 00C0) Beam Number
-                " 49 53"          # IS
-                " 00 02"          # length
-                " 31 20"          # value '1 '
-                " 30 0a 00 c2"    # (300A, 00C2) Beam Name
-                " 4c 4F"          # LO
-                " 00 06"          # length
-                " 42 65 61 6d 20 31"  # value 'Beam 1'
-                # -------------
-                " ff fe e0 00"    # (fffe, e000) Item Tag
-                " 00 00 00 18"    # Item (dataset) Length
-                " 30 0a 00 c0"    # (300A, 00C0) Beam Number
-                " 49 53"          # IS
-                " 00 02"          # length
-                " 32 20"          # value '2 '
-                " 30 0a 00 c2"    # (300A, 00C2) Beam Name
-                " 4C 4F"          # LO
-                " 00 06"          # length
-                " 42 65 61 6d 20 32"  # value 'Beam 2'
+            " ff fe e0 00"    # (fffe, e000) Item Tag
+            " 00 00 00 18"    # Item (dataset) Length
+            " 30 0a 00 c0"    # (300A, 00C0) Beam Number
+            " 49 53"          # IS
+            " 00 02"          # length
+            " 31 20"          # value '1 '
+            " 30 0a 00 c2"    # (300A, 00C2) Beam Name
+            " 4c 4F"          # LO
+            " 00 06"          # length
+            " 42 65 61 6d 20 31"  # value 'Beam 1'
+            # -------------
+            " ff fe e0 00"    # (fffe, e000) Item Tag
+            " 00 00 00 18"    # Item (dataset) Length
+            " 30 0a 00 c0"    # (300A, 00C0) Beam Number
+            " 49 53"          # IS
+            " 00 02"          # length
+            " 32 20"          # value '2 '
+            " 30 0a 00 c2"    # (300A, 00C2) Beam Name
+            " 4C 4F"          # LO
+            " 00 06"          # length
+            " 42 65 61 6d 20 32"  # value 'Beam 2'
             " ff fe E0 dd"    # SQ delimiter
             " 00 00 00 00"    # zero length
-                )
+        )
 
         infile = BytesIO(hex2bytes(hexstr))
         de_gen = data_element_generator(infile, is_implicit_VR=False, is_little_endian=False)
