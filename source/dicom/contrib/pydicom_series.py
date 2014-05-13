@@ -156,7 +156,7 @@ def _splitSerieIfRequired(serie, series):
     ds1 = L[0]
 
     # Check whether we can do this
-    if not "ImagePositionPatient" in ds1:
+    if "ImagePositionPatient" not in ds1:
         return
 
     # Initialize a list of new lists
@@ -301,7 +301,7 @@ def _getPixelDataFromDataset(ds):
 
 ## The public functions and classes
 
-def read_files(path, showProgress=False, readPixelData=False):
+def read_files(path, showProgress=False, readPixelData=False, force=False):
     """ read_files(path, showProgress=False, readPixelData=False)
 
     Reads dicom files and returns a list of DicomSeries objects, which
@@ -365,13 +365,13 @@ def read_files(path, showProgress=False, readPixelData=False):
     showProgress('Loading series information:')
     for filename in files:
 
-         # Skip DICOMDIR files
+        # Skip DICOMDIR files
         if filename.count("DICOMDIR"):
             continue
 
         # Try loading dicom ...
         try:
-            dcm = dicom.read_file(filename, deferSize)
+            dcm = dicom.read_file(filename, deferSize, force=force)
         except dicom.filereader.InvalidDicomError:
             continue  # skip non-dicom file
         except Exception as why:
